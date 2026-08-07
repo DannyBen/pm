@@ -12,7 +12,7 @@ commands:
   group: Package Management
 
 - name: install
-  alias: add
+  alias: [add, i]
   help: Install packages
   group: Package Management
   args:
@@ -25,8 +25,8 @@ commands:
   - pm install git
   - pm install git fzf
 
-- name: remove
-  alias: rm
+- name: uninstall
+  alias: [remove, rm]
   help: Remove packages and their unneeded dependencies
   group: Package Management
   args:
@@ -36,7 +36,7 @@ commands:
     repeatable: true
     completions: [$(pm list)]
   examples:
-  - pm remove git
+  - pm uninstall git
 
 - name: update-keys
   alias: keys
@@ -77,6 +77,7 @@ commands:
     help: List available repository packages instead of installed packages
 
 - name: info
+  alias: show
   help: Show package information
   group: Package Query
   args:
@@ -95,6 +96,7 @@ commands:
   - pm info git --available
 
 - name: search
+  alias: find
   help: Search packages
   group: Package Query
   args:
@@ -169,6 +171,7 @@ commands:
   - pm origin /usr/bin/git
 
 - name: history
+  alias: log
   help: Show package activity from the pacman log
   group: Package Analysis
   dependencies:

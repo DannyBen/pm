@@ -14,9 +14,9 @@ Scenario: Complete an available package for installation
   Then the output should include 'remotepkg'
   And the output should not include 'localpkg'
 
-Scenario: Complete an installed package for removal
+Scenario: Complete an installed package for uninstallation
   Given package commands are mocked
-  When I complete 'pm remove l'
+  When I complete 'pm uninstall l'
   Then the output should include 'localpkg'
   And the output should not include 'remotepkg'
 

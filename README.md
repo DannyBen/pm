@@ -63,10 +63,10 @@ search, build, or update AUR packages.
 ## Examples
 
 ```shell
-# Install, update, and remove packages
+# Install, update, and uninstall packages
 pm install git fzf
 pm update
-pm remove fzf
+pm uninstall fzf
 
 # Check for available updates without upgrading
 pm outdated
@@ -98,7 +98,7 @@ Usage:
 Package Management Commands:
   update        Update package databases and upgrade the system
   install       Install packages
-  remove        Remove packages and their unneeded dependencies
+  uninstall     Remove packages and their unneeded dependencies
 
 Package Maintenance Commands:
   update-keys   Update the Arch Linux keyring

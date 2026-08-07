@@ -23,7 +23,7 @@ pm_usage() {
   printf "%s\n" "$(bold "Package Management Commands:")"
   printf "  %s   Update package databases and upgrade the system\n" "$(green "update")     "
   printf "  %s   Install packages\n" "$(green "install")    "
-  printf "  %s   Remove packages and their unneeded dependencies\n" "$(green "remove")     "
+  printf "  %s   Remove packages and their unneeded dependencies\n" "$(green "uninstall")  "
   echo
   printf "%s\n" "$(bold "Package Maintenance Commands:")"
   printf "  %s   Update the Arch Linux keyring\n" "$(green "update-keys")"
@@ -85,7 +85,7 @@ pm_update_usage() {
 
 pm_install_usage() {
   printf "pm install - Install packages\n\n"
-  printf "Alias: add\n"
+  printf "Alias: add, i\n"
   echo
 
   printf "%s\n" "$(bold "Usage:")"
@@ -115,14 +115,14 @@ pm_install_usage() {
   fi
 }
 
-pm_remove_usage() {
-  printf "pm remove - Remove packages and their unneeded dependencies\n\n"
-  printf "Alias: rm\n"
+pm_uninstall_usage() {
+  printf "pm uninstall - Remove packages and their unneeded dependencies\n\n"
+  printf "Alias: remove, rm\n"
   echo
 
   printf "%s\n" "$(bold "Usage:")"
-  printf "  pm remove PACKAGE...\n"
-  printf "  pm remove --help | -h\n"
+  printf "  pm uninstall PACKAGE...\n"
+  printf "  pm uninstall --help | -h\n"
   echo
 
   if [[ -n "$long_usage" ]]; then
@@ -140,7 +140,7 @@ pm_remove_usage() {
     echo
 
     printf "%s\n" "$(bold "Examples:")"
-    printf "  pm remove git\n"
+    printf "  pm uninstall git\n"
     echo
 
   fi
@@ -246,6 +246,8 @@ pm_list_usage() {
 
 pm_info_usage() {
   printf "pm info - Show package information\n\n"
+  printf "Alias: show\n"
+  echo
 
   printf "%s\n" "$(bold "Usage:")"
   printf "  pm info PACKAGE... [OPTIONS]\n"
@@ -280,6 +282,8 @@ pm_info_usage() {
 
 pm_search_usage() {
   printf "pm search - Search packages\n\n"
+  printf "Alias: find\n"
+  echo
 
   printf "%s\n" "$(bold "Usage:")"
   printf "  pm search QUERY... [OPTIONS]\n"
@@ -434,6 +438,8 @@ pm_origin_usage() {
 
 pm_history_usage() {
   printf "pm history - Show package activity from the pacman log\n\n"
+  printf "Alias: log\n"
+  echo
 
   printf "%s\n" "$(bold "Usage:")"
   printf "  pm history PACKAGE [OPTIONS]\n"
@@ -678,6 +684,14 @@ send_completions() {
   echo $'        node_id=2'
   echo $'        node_word_count=1'
   echo $'        ;;'
+  echo $'      0:i)'
+  echo $'        node_id=2'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:uninstall)'
+  echo $'        node_id=3'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
   echo $'      0:remove)'
   echo $'        node_id=3'
   echo $'        node_word_count=1'
@@ -714,7 +728,15 @@ send_completions() {
   echo $'        node_id=8'
   echo $'        node_word_count=1'
   echo $'        ;;'
+  echo $'      0:show)'
+  echo $'        node_id=8'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
   echo $'      0:search)'
+  echo $'        node_id=9'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:find)'
   echo $'        node_id=9'
   echo $'        node_word_count=1'
   echo $'        ;;'
@@ -735,6 +757,10 @@ send_completions() {
   echo $'        node_word_count=1'
   echo $'        ;;'
   echo $'      0:history)'
+  echo $'        node_id=14'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:log)'
   echo $'        node_id=14'
   echo $'        node_word_count=1'
   echo $'        ;;'
@@ -821,7 +847,7 @@ send_completions() {
   echo $'  if [[ "${cur:0:1}" != "-" ]] && (( positional_index == 0 )); then'
   echo $'    case "$node_id" in'
   echo $'      0)'
-  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add remove rm update-keys keys clean outdated list ls info search browse provides tree origin history foreign repos completions" -- "$cur")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add i uninstall remove rm update-keys keys clean outdated list ls info show search find browse provides tree origin history log foreign repos completions" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
   echo $'    esac'
@@ -1008,7 +1034,7 @@ pm_install_command() {
 
 }
 
-pm_remove_command() {
+pm_uninstall_command() {
 
   packages=()
   eval "packages=(${args[package]})"
@@ -1223,17 +1249,17 @@ parse_requirements() {
       shift $#
       ;;
 
-    install | add)
+    install | add | i)
       action="install"
       shift
       pm_install_parse_requirements "$@"
       shift $#
       ;;
 
-    remove | rm)
-      action="remove"
+    uninstall | remove | rm)
+      action="uninstall"
       shift
-      pm_remove_parse_requirements "$@"
+      pm_uninstall_parse_requirements "$@"
       shift $#
       ;;
 
@@ -1265,14 +1291,14 @@ parse_requirements() {
       shift $#
       ;;
 
-    info)
+    info | show)
       action="info"
       shift
       pm_info_parse_requirements "$@"
       shift $#
       ;;
 
-    search)
+    search | find)
       action="search"
       shift
       pm_search_parse_requirements "$@"
@@ -1307,7 +1333,7 @@ parse_requirements() {
       shift $#
       ;;
 
-    history)
+    history | log)
       action="history"
       shift
       pm_history_parse_requirements "$@"
@@ -1468,7 +1494,7 @@ pm_install_parse_requirements() {
 
 }
 
-pm_remove_parse_requirements() {
+pm_uninstall_parse_requirements() {
   local key
 
   while [[ $# -gt 0 ]]; do
@@ -1476,7 +1502,7 @@ pm_remove_parse_requirements() {
     case "$key" in
       --help | -h)
         long_usage=yes
-        pm_remove_usage
+        pm_uninstall_usage
         exit
         ;;
 
@@ -1487,7 +1513,7 @@ pm_remove_parse_requirements() {
     esac
   done
 
-  action="remove"
+  action="uninstall"
 
   while [[ $# -gt 0 ]]; do
     key="$1"
@@ -1515,10 +1541,10 @@ pm_remove_parse_requirements() {
   done
 
   if [[ -z ${args['package']+x} ]]; then
-    printf "missing required argument: PACKAGE\nusage: pm remove PACKAGE...\n" >&2
+    printf "missing required argument: PACKAGE\nusage: pm uninstall PACKAGE...\n" >&2
 
     printf "examples:\n" >&2
-    printf "  pm remove git\n" >&2
+    printf "  pm uninstall git\n" >&2
 
     exit 1
   fi
@@ -2387,7 +2413,7 @@ run() {
   case "$action" in
     "update") pm_update_command ;;
     "install") pm_install_command ;;
-    "remove") pm_remove_command ;;
+    "uninstall") pm_uninstall_command ;;
     "update-keys") pm_update_keys_command ;;
     "clean") pm_clean_command ;;
     "outdated") pm_outdated_command ;;

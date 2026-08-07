@@ -19,8 +19,8 @@ Scenario: Install packages
   Then the output should include 'sudo pacman -S git fzf'
   And the exit code should mean success
 
-Scenario: Remove packages
-  When I run 'pm remove git fzf'
+Scenario: Uninstall packages
+  When I run 'pm uninstall git fzf'
   Then the output should include 'sudo pacman -Rs git fzf'
   And the exit code should mean success
 
