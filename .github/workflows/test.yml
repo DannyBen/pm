@@ -12,19 +12,13 @@ jobs:
 
     steps:
     - name: Install dependencies
-      run: pacman -Syu --noconfirm bash curl git ruby shellcheck shfmt
+      run: pacman -Syu --noconfirm curl shellcheck shfmt
 
     - name: Checkout code
       uses: actions/checkout@v4
 
-    - name: Install Bashly
-      run: gem install bashly --no-document
-
     - name: Install Shellkin
-      run: bash -c "$(curl -Ls https://raw.githubusercontent.com/DannyBen/shellkin/master/setup)"
-
-    - name: Generate script
-      run: bashly generate --upgrade
+      run: curl -Ls get.dannyb.co/shellkin/setup | bash
 
     - name: Run shellcheck
       run: shellcheck pm setup uninstall
