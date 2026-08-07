@@ -46,7 +46,7 @@ commands:
 - name: list
   alias: ls
   help: List package names
-  group: Installed Package
+  group: Package Query
   flags:
   - long: --available
     short: -a
@@ -54,36 +54,41 @@ commands:
 
 - name: info
   help: Show package information
-  group: Repository Package
+  group: Package Query
   args:
   - name: package
     help: Package name
     required: true
     repeatable: true
     completions:
-    - $(if _pm_completions_option_seen --installed -i; then pm list; else pm list --available; fi)
+    - $(if _pm_completions_option_seen --available -a; then pm list --available; else pm list; fi)
   flags:
-  - long: --installed
-    short: -i
-    help: Query installed packages instead of remote repositories
+  - long: --available
+    short: -a
+    help: Query available repository packages instead of installed packages
   examples:
   - pm info git
-  - pm info git --installed
+  - pm info git --available
 
 - name: search
-  help: Search remote repositories for packages
-  group: Repository Package
+  help: Search packages
+  group: Package Query
   args:
   - name: query
     help: Search expression
     required: true
     repeatable: true
+  flags:
+  - long: --available
+    short: -a
+    help: Search available repository packages instead of installed packages
   examples:
   - pm search terminal emulator
+  - pm search terminal emulator --available
 
 - name: provides
   help: Find packages that provide a command
-  group: Repository Package
+  group: Package Query
   dependencies:
     pkgfile: Install with $(magenta pm install pkgfile)
   args:
@@ -93,23 +98,20 @@ commands:
   examples:
   - pm provides convert
 
-- name: index
-  help: Browse installed packages interactively
-  group: Installed Package
+- name: browse
+  help: Browse packages interactively
+  group: Package Query
   dependencies:
     fzf: Install with $(magenta pm install fzf)
     less: Install with $(magenta pm install less)
-
-- name: catalog
-  help: Browse the repository package catalog interactively
-  group: Repository Package
-  dependencies:
-    fzf: Install with $(magenta pm install fzf)
-    less: Install with $(magenta pm install less)
+  flags:
+  - long: --available
+    short: -a
+    help: Browse available repository packages instead of installed packages
 
 - name: origin
   help: Show which installed package owns a file
-  group: Installed Package
+  group: Package Query
   args:
   - name: path
     help: File path

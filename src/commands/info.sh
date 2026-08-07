@@ -1,10 +1,10 @@
 packages=()
 eval "packages=(${args[package]})"
 
-if [[ ${args[--installed]:-} ]]; then
-  operation=-Qi
-else
+if [[ ${args[--available]:-} ]]; then
   operation=-Si
+else
+  operation=-Qi
 fi
 
 pacman "$operation" "${packages[@]}"

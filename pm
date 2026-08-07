@@ -26,16 +26,13 @@ pm_usage() {
   printf "  %s   Remove packages and their unneeded dependencies\n" "$(green "remove")     "
   printf "  %s   Update the Arch Linux keyring\n" "$(green "update-keys")"
   echo
-  printf "%s\n" "$(bold "Installed Package Commands:")"
+  printf "%s\n" "$(bold "Package Query Commands:")"
   printf "  %s   List package names\n" "$(green "list")       "
-  printf "  %s   Browse installed packages interactively\n" "$(green "index")      "
-  printf "  %s   Show which installed package owns a file\n" "$(green "origin")     "
-  echo
-  printf "%s\n" "$(bold "Repository Package Commands:")"
   printf "  %s   Show package information\n" "$(green "info")       "
-  printf "  %s   Search remote repositories for packages\n" "$(green "search")     "
+  printf "  %s   Search packages\n" "$(green "search")     "
   printf "  %s   Find packages that provide a command\n" "$(green "provides")   "
-  printf "  %s   Browse the repository package catalog interactively\n" "$(green "catalog")    "
+  printf "  %s   Browse packages interactively\n" "$(green "browse")     "
+  printf "  %s   Show which installed package owns a file\n" "$(green "origin")     "
   echo
   printf "%s\n" "$(bold "Internal Commands:")"
   printf "  %s   Generate bash completions.\n" "$(green "completions")"
@@ -197,8 +194,8 @@ pm_info_usage() {
 
     printf "%s\n" "$(bold "Options:")"
 
-    printf "  %s\n" "$(green "--installed, -i")"
-    printf "    Query installed packages instead of remote repositories\n"
+    printf "  %s\n" "$(green "--available, -a")"
+    printf "    Query available repository packages instead of installed packages\n"
     echo
 
     printf "  %s\n" "$(green "--help, -h")"
@@ -213,23 +210,27 @@ pm_info_usage() {
 
     printf "%s\n" "$(bold "Examples:")"
     printf "  pm info git\n"
-    printf "  pm info git --installed\n"
+    printf "  pm info git --available\n"
     echo
 
   fi
 }
 
 pm_search_usage() {
-  printf "pm search - Search remote repositories for packages\n\n"
+  printf "pm search - Search packages\n\n"
 
   printf "%s\n" "$(bold "Usage:")"
-  printf "  pm search QUERY...\n"
+  printf "  pm search QUERY... [OPTIONS]\n"
   printf "  pm search --help | -h\n"
   echo
 
   if [[ -n "$long_usage" ]]; then
 
     printf "%s\n" "$(bold "Options:")"
+
+    printf "  %s\n" "$(green "--available, -a")"
+    printf "    Search available repository packages instead of installed packages\n"
+    echo
 
     printf "  %s\n" "$(green "--help, -h")"
     printf "    Show this help\n"
@@ -243,6 +244,7 @@ pm_search_usage() {
 
     printf "%s\n" "$(bold "Examples:")"
     printf "  pm search terminal emulator\n"
+    printf "  pm search terminal emulator --available\n"
     echo
 
   fi
@@ -277,36 +279,21 @@ pm_provides_usage() {
   fi
 }
 
-pm_index_usage() {
-  printf "pm index - Browse installed packages interactively\n\n"
+pm_browse_usage() {
+  printf "pm browse - Browse packages interactively\n\n"
 
   printf "%s\n" "$(bold "Usage:")"
-  printf "  pm index\n"
-  printf "  pm index --help | -h\n"
+  printf "  pm browse [OPTIONS]\n"
+  printf "  pm browse --help | -h\n"
   echo
 
   if [[ -n "$long_usage" ]]; then
 
     printf "%s\n" "$(bold "Options:")"
 
-    printf "  %s\n" "$(green "--help, -h")"
-    printf "    Show this help\n"
+    printf "  %s\n" "$(green "--available, -a")"
+    printf "    Browse available repository packages instead of installed packages\n"
     echo
-
-  fi
-}
-
-pm_catalog_usage() {
-  printf "pm catalog - Browse the repository package catalog interactively\n\n"
-
-  printf "%s\n" "$(bold "Usage:")"
-  printf "  pm catalog\n"
-  printf "  pm catalog --help | -h\n"
-  echo
-
-  if [[ -n "$long_usage" ]]; then
-
-    printf "%s\n" "$(bold "Options:")"
 
     printf "  %s\n" "$(green "--help, -h")"
     printf "    Show this help\n"
@@ -458,13 +445,14 @@ send_completions() {
   echo $'    5:--help|5:-h) return 0 ;;'
   echo $'    5:--available|5:-a) return 0 ;;'
   echo $'    6:--help|6:-h) return 0 ;;'
-  echo $'    6:--installed|6:-i) return 0 ;;'
+  echo $'    6:--available|6:-a) return 0 ;;'
   echo $'    7:--help|7:-h) return 0 ;;'
+  echo $'    7:--available|7:-a) return 0 ;;'
   echo $'    8:--help|8:-h) return 0 ;;'
   echo $'    9:--help|9:-h) return 0 ;;'
+  echo $'    9:--available|9:-a) return 0 ;;'
   echo $'    10:--help|10:-h) return 0 ;;'
   echo $'    11:--help|11:-h) return 0 ;;'
-  echo $'    12:--help|12:-h) return 0 ;;'
   echo $'  esac'
   echo $''
   echo $'  return 1'
@@ -541,20 +529,16 @@ send_completions() {
   echo $'        node_id=8'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:index)'
+  echo $'      0:browse)'
   echo $'        node_id=9'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:catalog)'
+  echo $'      0:origin)'
   echo $'        node_id=10'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:origin)'
-  echo $'        node_id=11'
-  echo $'        node_word_count=1'
-  echo $'        ;;'
   echo $'      0:completions)'
-  echo $'        node_id=12'
+  echo $'        node_id=11'
   echo $'        node_word_count=1'
   echo $'        ;;'
   echo $'      *)'
@@ -622,7 +606,7 @@ send_completions() {
   echo $'  if [[ "${cur:0:1}" != "-" ]] && (( positional_index == 0 )); then'
   echo $'    case "$node_id" in'
   echo $'      0)'
-  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add remove rm update-keys keys list ls info search provides index catalog origin completions" -- "$cur")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add remove rm update-keys keys list ls info search provides browse origin completions" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
   echo $'    esac'
@@ -671,13 +655,14 @@ send_completions() {
   echo $'      6)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
-  echo $'        _pm_completions_option_seen "--installed" "-i" || words+=("--installed" "-i")'
+  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
   echo $'      7)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
@@ -690,6 +675,7 @@ send_completions() {
   echo $'      9)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
@@ -700,12 +686,6 @@ send_completions() {
   echo $'        return'
   echo $'        ;;'
   echo $'      11)'
-  echo $'        local words=()'
-  echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
-  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
-  echo $'        return'
-  echo $'        ;;'
-  echo $'      12)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
@@ -725,7 +705,7 @@ send_completions() {
   echo $'  fi'
   echo $''
   echo $'  if [[ "$node_id" == "6" ]] && (( positional_index >= 0 )); then'
-  echo $'    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(if _pm_completions_option_seen --installed -i; then pm list; else pm list --available; fi)" -- "$cur")'
+  echo $'    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(if _pm_completions_option_seen --available -a; then pm list --available; else pm list; fi)" -- "$cur")'
   echo $'    return'
   echo $'  fi'
   echo $''
@@ -733,7 +713,7 @@ send_completions() {
   echo $'    return'
   echo $'  fi'
   echo $''
-  echo $'  if [[ "$node_id" == "11" ]] && (( positional_index >= 0 )); then'
+  echo $'  if [[ "$node_id" == "10" ]] && (( positional_index >= 0 )); then'
   echo $'    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -A file -- "$cur")'
   echo $'    return'
   echo $'  fi'
@@ -794,10 +774,10 @@ pm_info_command() {
   packages=()
   eval "packages=(${args[package]})"
 
-  if [[ ${args[--installed]:-} ]]; then
-    operation=-Qi
-  else
+  if [[ ${args[--available]:-} ]]; then
     operation=-Si
+  else
+    operation=-Qi
   fi
 
   pacman "$operation" "${packages[@]}"
@@ -809,7 +789,13 @@ pm_search_command() {
   queries=()
   eval "queries=(${args[query]})"
 
-  pacman -Ss "${queries[@]}"
+  if [[ ${args[--available]:-} ]]; then
+    operation=-Ss
+  else
+    operation=-Qs
+  fi
+
+  pacman "$operation" "${queries[@]}"
 
 }
 
@@ -819,21 +805,19 @@ pm_provides_command() {
 
 }
 
-pm_index_command() {
+pm_browse_command() {
 
-  pacman -Qq | fzf \
-    --preview 'pacman -Qil {}' \
-    --layout=reverse \
-    --bind 'enter:execute(pacman -Qil {} | less)'
-
-}
-
-pm_catalog_command() {
-
-  pacman -S -l -q | fzf \
-    --preview 'pacman -Si {}' \
-    --layout=reverse \
-    --bind 'enter:execute(pacman -Si {} | less)'
+  if [[ ${args[--available]:-} ]]; then
+    pacman -S -l -q | fzf \
+      --preview 'pacman -Si {}' \
+      --layout=reverse \
+      --bind 'enter:execute(pacman -Si {} | less)'
+  else
+    pacman -Qq | fzf \
+      --preview 'pacman -Qil {}' \
+      --layout=reverse \
+      --bind 'enter:execute(pacman -Qil {} | less)'
+  fi
 
 }
 
@@ -949,17 +933,10 @@ parse_requirements() {
       shift $#
       ;;
 
-    index)
-      action="index"
+    browse)
+      action="browse"
       shift
-      pm_index_parse_requirements "$@"
-      shift $#
-      ;;
-
-    catalog)
-      action="catalog"
-      shift
-      pm_catalog_parse_requirements "$@"
+      pm_browse_parse_requirements "$@"
       shift $#
       ;;
 
@@ -1282,9 +1259,9 @@ pm_info_parse_requirements() {
     key="$1"
     case "$key" in
 
-      --installed | -i)
+      --available | -a)
 
-        args['--installed']=1
+        args['--available']=1
         shift
         ;;
 
@@ -1314,7 +1291,7 @@ pm_info_parse_requirements() {
 
     printf "examples:\n" >&2
     printf "  pm info git\n" >&2
-    printf "  pm info git --installed\n" >&2
+    printf "  pm info git --available\n" >&2
 
     exit 1
   fi
@@ -1346,6 +1323,12 @@ pm_search_parse_requirements() {
     key="$1"
     case "$key" in
 
+      --available | -a)
+
+        args['--available']=1
+        shift
+        ;;
+
       -?*)
         printf "invalid option: %s\n" "$key" >&2
         exit 1
@@ -1368,10 +1351,11 @@ pm_search_parse_requirements() {
   done
 
   if [[ -z ${args['query']+x} ]]; then
-    printf "missing required argument: QUERY\nusage: pm search QUERY...\n" >&2
+    printf "missing required argument: QUERY\nusage: pm search QUERY... [OPTIONS]\n" >&2
 
     printf "examples:\n" >&2
     printf "  pm search terminal emulator\n" >&2
+    printf "  pm search terminal emulator --available\n" >&2
 
     exit 1
   fi
@@ -1446,7 +1430,7 @@ pm_provides_parse_requirements() {
 
 }
 
-pm_index_parse_requirements() {
+pm_browse_parse_requirements() {
   local key
 
   while [[ $# -gt 0 ]]; do
@@ -1454,7 +1438,7 @@ pm_index_parse_requirements() {
     case "$key" in
       --help | -h)
         long_usage=yes
-        pm_index_usage
+        pm_browse_usage
         exit
         ;;
 
@@ -1483,71 +1467,17 @@ pm_index_parse_requirements() {
     exit 1
   fi
 
-  action="index"
+  action="browse"
 
   while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
 
-      -?*)
-        printf "invalid option: %s\n" "$key" >&2
-        exit 1
+      --available | -a)
+
+        args['--available']=1
+        shift
         ;;
-
-      *)
-
-        printf "invalid argument: %s\n" "$key" >&2
-        exit 1
-
-        ;;
-
-    esac
-  done
-
-}
-
-pm_catalog_parse_requirements() {
-  local key
-
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
-      --help | -h)
-        long_usage=yes
-        pm_catalog_usage
-        exit
-        ;;
-
-      *)
-        break
-        ;;
-
-    esac
-  done
-
-  missing_deps=
-
-  if ! command -v fzf >/dev/null 2>&1; then
-    printf "missing dependency: fzf\n" >&2
-    printf "%s\n\n" "Install with $(magenta pm install fzf)" >&2
-    missing_deps=1
-  fi
-
-  if ! command -v less >/dev/null 2>&1; then
-    printf "missing dependency: less\n" >&2
-    printf "%s\n\n" "Install with $(magenta pm install less)" >&2
-    missing_deps=1
-  fi
-
-  if [[ -n $missing_deps ]]; then
-    exit 1
-  fi
-
-  action="catalog"
-
-  while [[ $# -gt 0 ]]; do
-    key="$1"
-    case "$key" in
 
       -?*)
         printf "invalid option: %s\n" "$key" >&2
@@ -1689,8 +1619,7 @@ run() {
     "info") pm_info_command ;;
     "search") pm_search_command ;;
     "provides") pm_provides_command ;;
-    "index") pm_index_command ;;
-    "catalog") pm_catalog_command ;;
+    "browse") pm_browse_command ;;
     "origin") pm_origin_command ;;
     "completions") pm_completions_command ;;
   esac

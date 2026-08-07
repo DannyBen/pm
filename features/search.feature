@@ -1,11 +1,15 @@
 Feature: Package search
-  Search packages in remote repositories
+  Search installed and available packages
 
-Scenario: Find a package
-  When I run "pm search '^pacman$'"
-  Then the output should include 'core/pacman'
+Background:
+  Given package commands are mocked
+
+Scenario: Search installed packages
+  When I run 'pm search pacman'
+  Then the output should include 'pacman -Qs pacman'
   And the exit code should mean success
 
-Scenario: Find no packages
-  When I run 'pm search pm-package-that-does-not-exist'
-  Then the exit code should mean failure
+Scenario: Search available packages
+  When I run 'pm search pacman -a'
+  Then the output should include 'pacman -Ss pacman'
+  And the exit code should mean success

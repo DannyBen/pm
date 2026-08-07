@@ -1,14 +1,15 @@
 Feature: Package information
-  Show information about remote and installed packages
+  Show information about installed and available packages
 
-Scenario: Show remote package information
-  When I run 'pm info pacman'
-  Then the output should include 'Repository'
-  And the output should include 'Name'
-  And the exit code should mean success
+Background:
+  Given package commands are mocked
 
 Scenario: Show installed package information
-  When I run 'pm info pacman --installed'
-  Then the output should include 'Name'
-  And the output should include 'Install Date'
+  When I run 'pm info pacman'
+  Then the output should include 'pacman -Qi pacman'
+  And the exit code should mean success
+
+Scenario: Show available package information
+  When I run 'pm info pacman --available'
+  Then the output should include 'pacman -Si pacman'
   And the exit code should mean success

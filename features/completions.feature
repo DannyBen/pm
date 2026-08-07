@@ -20,14 +20,14 @@ Scenario: Complete an installed package for removal
   Then the output should include 'localpkg'
   And the output should not include 'remotepkg'
 
-Scenario: Complete an available package for information
-  Given package commands are mocked
-  When I complete 'pm info r'
-  Then the output should include 'remotepkg'
-  And the output should not include 'localpkg'
-
 Scenario: Complete an installed package for information
   Given package commands are mocked
-  When I complete 'pm info --installed l'
+  When I complete 'pm info l'
   Then the output should include 'localpkg'
   And the output should not include 'remotepkg'
+
+Scenario: Complete an available package for information
+  Given package commands are mocked
+  When I complete 'pm info -a r'
+  Then the output should include 'remotepkg'
+  And the output should not include 'localpkg'

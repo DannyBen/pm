@@ -1,4 +1,10 @@
 queries=()
 eval "queries=(${args[query]})"
 
-pacman -Ss "${queries[@]}"
+if [[ ${args[--available]:-} ]]; then
+  operation=-Ss
+else
+  operation=-Qs
+fi
+
+pacman "$operation" "${queries[@]}"
