@@ -1,0 +1,108 @@
+name: pm
+help: A friendly interface for pacman
+version: 0.1.0
+
+dependencies:
+  pacman: pm requires pacman and is intended for Arch Linux
+
+commands:
+- name: update
+  alias: u
+  help: Update package databases and upgrade the system
+  group: Package Management
+
+- name: install
+  alias: add
+  help: Install packages
+  group: Package Management
+  args:
+  - &packages
+    name: package
+    help: Package name
+    required: true
+    repeatable: true
+  examples:
+  - pm install git
+  - pm install git fzf
+
+- name: remove
+  alias: rm
+  help: Remove packages and their unneeded dependencies
+  group: Package Management
+  args: [*packages]
+  examples:
+  - pm remove git
+
+- name: update-keys
+  alias: keys
+  help: Update the Arch Linux keyring
+  group: Package Management
+
+- name: list
+  alias: ls
+  help: List explicitly installed packages
+  group: Installed Package
+
+- name: info
+  help: Show package information
+  group: Repository Package
+  args:
+  - name: package
+    help: Package name
+    required: true
+    repeatable: true
+  flags:
+  - long: --installed
+    short: -i
+    help: Query installed packages instead of remote repositories
+  examples:
+  - pm info git
+  - pm info git --installed
+
+- name: search
+  help: Search remote repositories for packages
+  group: Repository Package
+  args:
+  - name: query
+    help: Search expression
+    required: true
+    repeatable: true
+  examples:
+  - pm search terminal emulator
+
+- name: provides
+  help: Find packages that provide a command
+  group: Repository Package
+  dependencies:
+    pkgfile: Install with $(magenta pm install pkgfile)
+  args:
+  - name: command
+    help: Command name
+    required: true
+  examples:
+  - pm provides convert
+
+- name: index
+  help: Browse installed packages interactively
+  group: Installed Package
+  dependencies:
+    fzf: Install with $(magenta pm install fzf)
+    less: Install with $(magenta pm install less)
+
+- name: catalog
+  help: Browse the repository package catalog interactively
+  group: Repository Package
+  dependencies:
+    fzf: Install with $(magenta pm install fzf)
+    less: Install with $(magenta pm install less)
+
+- name: origin
+  help: Show which installed package owns a file
+  group: Installed Package
+  args:
+  - name: path
+    help: File path
+    required: true
+    repeatable: true
+  examples:
+  - pm origin /usr/bin/git

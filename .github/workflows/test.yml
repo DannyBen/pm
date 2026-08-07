@@ -1,0 +1,36 @@
+name: Test
+
+on:
+  pull_request:
+  push: { branches: master }
+
+jobs:
+  test:
+    name: Run test suite
+    runs-on: ubuntu-latest
+    container: archlinux:latest
+
+    steps:
+    - name: Install dependencies
+      run: pacman -Syu --noconfirm bash curl git ruby shellcheck shfmt
+
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Bashly
+      run: gem install bashly --no-document
+
+    - name: Install Shellkin
+      run: bash -c "$(curl -Ls https://raw.githubusercontent.com/DannyBen/shellkin/master/setup)"
+
+    - name: Generate script
+      run: bashly generate --upgrade
+
+    - name: Run shellcheck
+      run: shellcheck pm setup uninstall
+
+    - name: Run shfmt
+      run: shfmt -ci -i 2 -d pm setup uninstall
+
+    - name: Run feature tests
+      run: shellkin

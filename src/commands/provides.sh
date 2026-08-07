@@ -1,0 +1,1 @@
+pkgfile -b "${args[command]}"

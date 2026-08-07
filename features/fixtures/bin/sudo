@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+printf 'sudo'
+printf ' %s' "$@"
+printf '\n'

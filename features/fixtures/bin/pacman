@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+printf 'pacman'
+printf ' %s' "$@"
+printf '\n'
