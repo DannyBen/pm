@@ -1,3 +1,10 @@
+@Before
+  scenario_path="$PATH"
+
+@After
+  PATH="$scenario_path"
+  export PATH
+
 @Given package commands are mocked
   PATH="$PWD/features/fixtures/bin:$PATH"
   export PATH

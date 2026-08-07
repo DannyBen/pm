@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+printf 'packages:\n'
+sed 's/^/  /'
+printf 'fzf'
+printf ' %s' "$@"
+printf '\n'

@@ -1,4 +1,15 @@
 #!/usr/bin/env bash
+
+if [[ $* == "-Qq" ]]; then
+  printf 'bash\ngit\npacman\n'
+  exit
+fi
+
+if [[ $* == "-S -l -q" ]]; then
+  printf 'bash\ngit\npacman\nripgrep\n'
+  exit
+fi
+
 printf 'pacman'
 printf ' %s' "$@"
 printf '\n'

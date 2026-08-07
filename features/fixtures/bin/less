@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+printf 'less'
+printf ' %s' "$@"
+printf '\n'
