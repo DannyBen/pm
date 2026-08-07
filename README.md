@@ -1,5 +1,7 @@
 # pm - Friendly Pacman
 
+![repocard](https://repocard.dannyben.com/svg/pm.svg)
+
 pm is a friendly command-line interface for Arch Linux's pacman package
 manager. It replaces hard-to-remember combinations of uppercase and lowercase
 flags with clear commands such as `pm install`, `pm search`, and `pm outdated`.
