@@ -203,5 +203,5 @@ commands:
     pacman-conf: Install with $(magenta pm install pacman)
 
 - name: completions
-  help: Generate bash completions.
+  help: Generate bash completions
   group: Internal

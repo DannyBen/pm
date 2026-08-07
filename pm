@@ -45,7 +45,7 @@ pm_usage() {
   printf "  %s   List configured package repositories\n" "$(green "repos")      "
   echo
   printf "%s\n" "$(bold "Internal Commands:")"
-  printf "  %s   Generate bash completions.\n" "$(green "completions")"
+  printf "  %s   Generate bash completions\n" "$(green "completions")"
   echo
 
   if [[ -n "$long_usage" ]]; then
@@ -512,7 +512,7 @@ pm_repos_usage() {
 }
 
 pm_completions_usage() {
-  printf "pm completions - Generate bash completions.\n\n"
+  printf "pm completions - Generate bash completions\n\n"
 
   printf "%s\n" "$(bold "Usage:")"
   printf "  pm completions\n"
