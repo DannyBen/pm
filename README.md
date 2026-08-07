@@ -120,7 +120,7 @@ Package Analysis Commands:
   repos         List configured package repositories
 
 Internal Commands:
-  completions   Generate bash completions.
+  completions   Generate bash completions
 ```
 
 Run `pm COMMAND --help` for command-specific options and examples.
@@ -130,12 +130,12 @@ Run `pm COMMAND --help` for command-specific options and examples.
 Most pm commands only require pacman. Additional commands declare their own
 dependencies and show installation instructions when needed:
 
-| Commands | Package |
-|:---------|:--------|
+| Commands                    | Package          |
+|:----------------------------|:-----------------|
 | `clean`, `outdated`, `tree` | `pacman-contrib` |
-| `browse` | `fzf`, `less` |
-| `provides` | `pkgfile` |
-| `history` | `ripgrep` |
+| `browse`                    | `fzf`, `less`    |
+| `provides`                  | `pkgfile`        |
+| `history`                   | `ripgrep`        |
 
 ## Uninstall
 
