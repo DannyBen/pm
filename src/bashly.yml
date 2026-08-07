@@ -168,6 +168,37 @@ commands:
   examples:
   - pm origin /usr/bin/git
 
+- name: history
+  help: Show package activity from the pacman log
+  group: Package Analysis
+  dependencies:
+    rg: Install with $(magenta pm install ripgrep)
+    pacman-conf: Install with $(magenta pm install pacman)
+  args:
+  - name: package
+    help: Package name
+    required: true
+    completions: [$(pm list)]
+  flags:
+  - long: --context
+    short: -c
+    arg: lines
+    default: "10"
+    help: Number of lines to show around each match
+  examples:
+  - pm history mdcat
+  - pm history mdcat --context 5
+
+- name: foreign
+  help: List installed packages absent from configured repositories
+  group: Package Analysis
+
+- name: repos
+  help: List configured package repositories
+  group: Package Analysis
+  dependencies:
+    pacman-conf: Install with $(magenta pm install pacman)
+
 - name: completions
   help: Generate bash completions.
   group: Internal

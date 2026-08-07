@@ -43,3 +43,9 @@ Scenario: Complete an available package for a dependency tree
   When I complete 'pm tree -a r'
   Then the output should include 'remotepkg'
   And the output should not include 'localpkg'
+
+Scenario: Complete an installed package for package history
+  Given package commands are mocked
+  When I complete 'pm history l'
+  Then the output should include 'localpkg'
+  And the output should not include 'remotepkg'

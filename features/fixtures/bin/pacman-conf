@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+case $1 in
+  LogFile)
+    printf '/custom/pacman.log\n'
+    ;;
+
+  --repo-list)
+    printf 'core\nextra\n'
+    ;;
+esac

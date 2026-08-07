@@ -40,6 +40,9 @@ pm_usage() {
   printf "  %s   Find packages that provide a command\n" "$(green "provides")   "
   printf "  %s   Show a package dependency tree\n" "$(green "tree")       "
   printf "  %s   Show which installed package owns a file\n" "$(green "origin")     "
+  printf "  %s   Show package activity from the pacman log\n" "$(green "history")    "
+  printf "  %s   List installed packages absent from configured repositories\n" "$(green "foreign")    "
+  printf "  %s   List configured package repositories\n" "$(green "repos")      "
   echo
   printf "%s\n" "$(bold "Internal Commands:")"
   printf "  %s   Generate bash completions.\n" "$(green "completions")"
@@ -429,6 +432,79 @@ pm_origin_usage() {
   fi
 }
 
+pm_history_usage() {
+  printf "pm history - Show package activity from the pacman log\n\n"
+
+  printf "%s\n" "$(bold "Usage:")"
+  printf "  pm history PACKAGE [OPTIONS]\n"
+  printf "  pm history --help | -h\n"
+  echo
+
+  if [[ -n "$long_usage" ]]; then
+
+    printf "%s\n" "$(bold "Options:")"
+
+    printf "  %s\n" "$(green "--context, -c LINES")"
+    printf "    Number of lines to show around each match\n"
+    printf "    %s\n" "Default: 10"
+    echo
+
+    printf "  %s\n" "$(green "--help, -h")"
+    printf "    Show this help\n"
+    echo
+
+    printf "%s\n" "$(bold "Arguments:")"
+
+    printf "  %s\n" "$(green "PACKAGE")"
+    printf "    Package name\n"
+    echo
+
+    printf "%s\n" "$(bold "Examples:")"
+    printf "  pm history mdcat\n"
+    printf "  pm history mdcat --context 5\n"
+    echo
+
+  fi
+}
+
+pm_foreign_usage() {
+  printf "pm foreign - List installed packages absent from configured repositories\n\n"
+
+  printf "%s\n" "$(bold "Usage:")"
+  printf "  pm foreign\n"
+  printf "  pm foreign --help | -h\n"
+  echo
+
+  if [[ -n "$long_usage" ]]; then
+
+    printf "%s\n" "$(bold "Options:")"
+
+    printf "  %s\n" "$(green "--help, -h")"
+    printf "    Show this help\n"
+    echo
+
+  fi
+}
+
+pm_repos_usage() {
+  printf "pm repos - List configured package repositories\n\n"
+
+  printf "%s\n" "$(bold "Usage:")"
+  printf "  pm repos\n"
+  printf "  pm repos --help | -h\n"
+  echo
+
+  if [[ -n "$long_usage" ]]; then
+
+    printf "%s\n" "$(bold "Options:")"
+
+    printf "  %s\n" "$(green "--help, -h")"
+    printf "    Show this help\n"
+    echo
+
+  fi
+}
+
 pm_completions_usage() {
   printf "pm completions - Generate bash completions.\n\n"
 
@@ -557,7 +633,11 @@ send_completions() {
   echo $'    12:--available|12:-a) return 0 ;;'
   echo $'    12:--reverse|12:-r) return 0 ;;'
   echo $'    13:--help|13:-h) return 0 ;;'
+  echo $'    14:--context|14:-c) return 2 ;;'
   echo $'    14:--help|14:-h) return 0 ;;'
+  echo $'    15:--help|15:-h) return 0 ;;'
+  echo $'    16:--help|16:-h) return 0 ;;'
+  echo $'    17:--help|17:-h) return 0 ;;'
   echo $'  esac'
   echo $''
   echo $'  return 1'
@@ -654,8 +734,20 @@ send_completions() {
   echo $'        node_id=13'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:completions)'
+  echo $'      0:history)'
   echo $'        node_id=14'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:foreign)'
+  echo $'        node_id=15'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:repos)'
+  echo $'        node_id=16'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:completions)'
+  echo $'        node_id=17'
   echo $'        node_word_count=1'
   echo $'        ;;'
   echo $'      *)'
@@ -721,12 +813,15 @@ send_completions() {
   echo $'    5:--keep|5:-k)'
   echo $'      return'
   echo $'      ;;'
+  echo $'    14:--context|14:-c)'
+  echo $'      return'
+  echo $'      ;;'
   echo $'  esac'
   echo $''
   echo $'  if [[ "${cur:0:1}" != "-" ]] && (( positional_index == 0 )); then'
   echo $'    case "$node_id" in'
   echo $'      0)'
-  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add remove rm update-keys keys clean outdated list ls info search browse provides tree origin completions" -- "$cur")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add remove rm update-keys keys clean outdated list ls info search browse provides tree origin history foreign repos completions" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
   echo $'    esac'
@@ -830,6 +925,25 @@ send_completions() {
   echo $'      14)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        _pm_completions_option_seen "--context" "-c" || words+=("--context" "-c")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
+  echo $'        return'
+  echo $'        ;;'
+  echo $'      15)'
+  echo $'        local words=()'
+  echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
+  echo $'        return'
+  echo $'        ;;'
+  echo $'      16)'
+  echo $'        local words=()'
+  echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
+  echo $'        return'
+  echo $'        ;;'
+  echo $'      17)'
+  echo $'        local words=()'
+  echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
@@ -866,6 +980,10 @@ send_completions() {
   echo $'      ;;'
   echo $'    12:0)'
   echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(if _pm_completions_option_seen --available -a; then pm list --available; else pm list; fi)" -- "$cur")'
+  echo $'      return'
+  echo $'      ;;'
+  echo $'    14:0)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(pm list)" -- "$cur")'
   echo $'      return'
   echo $'      ;;'
   echo $'  esac'
@@ -1025,6 +1143,32 @@ pm_origin_command() {
 
 }
 
+pm_history_command() {
+
+  log_file=$(pacman-conf LogFile)
+
+  rg \
+    -n \
+    --context "${args[--context]}" \
+    --fixed-strings \
+    -- \
+    "${args[package]}" \
+    "$log_file"
+
+}
+
+pm_foreign_command() {
+
+  pacman -Qm
+
+}
+
+pm_repos_command() {
+
+  pacman-conf --repo-list
+
+}
+
 pm_completions_command() {
 
   send_completions
@@ -1160,6 +1304,27 @@ parse_requirements() {
       action="origin"
       shift
       pm_origin_parse_requirements "$@"
+      shift $#
+      ;;
+
+    history)
+      action="history"
+      shift
+      pm_history_parse_requirements "$@"
+      shift $#
+      ;;
+
+    foreign)
+      action="foreign"
+      shift
+      pm_foreign_parse_requirements "$@"
+      shift $#
+      ;;
+
+    repos)
+      action="repos"
+      shift
+      pm_repos_parse_requirements "$@"
       shift $#
       ;;
 
@@ -1977,6 +2142,191 @@ pm_origin_parse_requirements() {
 
 }
 
+pm_history_parse_requirements() {
+  local key
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        pm_history_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  missing_deps=
+
+  if ! command -v rg >/dev/null 2>&1; then
+    printf "missing dependency: rg\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install ripgrep)" >&2
+    missing_deps=1
+  fi
+
+  if ! command -v pacman-conf >/dev/null 2>&1; then
+    printf "missing dependency: pacman-conf\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install pacman)" >&2
+    missing_deps=1
+  fi
+
+  if [[ -n $missing_deps ]]; then
+    exit 1
+  fi
+
+  action="history"
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      --context | -c)
+
+        if [[ -n ${2+x} ]]; then
+          args['--context']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--context requires an argument: --context, -c LINES" >&2
+          exit 1
+        fi
+        ;;
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+
+        if [[ -z ${args['package']+x} ]]; then
+          args['package']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
+
+        ;;
+
+    esac
+  done
+
+  if [[ -z ${args['package']+x} ]]; then
+    printf "missing required argument: PACKAGE\nusage: pm history PACKAGE [OPTIONS]\n" >&2
+
+    printf "examples:\n" >&2
+    printf "  pm history mdcat\n" >&2
+    printf "  pm history mdcat --context 5\n" >&2
+
+    exit 1
+  fi
+
+  [[ -n ${args['--context']:-} ]] || args['--context']="10"
+
+}
+
+pm_foreign_parse_requirements() {
+  local key
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        pm_foreign_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  action="foreign"
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+pm_repos_parse_requirements() {
+  local key
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        pm_repos_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  missing_deps=
+
+  if ! command -v pacman-conf >/dev/null 2>&1; then
+    printf "missing dependency: pacman-conf\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install pacman)" >&2
+    missing_deps=1
+  fi
+
+  if [[ -n $missing_deps ]]; then
+    exit 1
+  fi
+
+  action="repos"
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
 pm_completions_parse_requirements() {
   local key
 
@@ -2048,6 +2398,9 @@ run() {
     "provides") pm_provides_command ;;
     "tree") pm_tree_command ;;
     "origin") pm_origin_command ;;
+    "history") pm_history_command ;;
+    "foreign") pm_foreign_command ;;
+    "repos") pm_repos_command ;;
     "completions") pm_completions_command ;;
   esac
 }

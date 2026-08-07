@@ -1,0 +1,1 @@
+pacman-conf --repo-list

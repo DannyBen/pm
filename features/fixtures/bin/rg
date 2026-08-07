@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+printf 'rg'
+printf ' %s' "$@"
+printf '\n'
