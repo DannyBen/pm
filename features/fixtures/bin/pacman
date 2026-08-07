@@ -6,7 +6,12 @@ if [[ $* == "-Qq" ]]; then
 fi
 
 if [[ $* == "-S -l -q" ]]; then
-  printf 'bash\ngit\npacman\nripgrep\n'
+  printf 'bash\ngit\npacman\nremotepkg\nripgrep\n'
+  exit
+fi
+
+if [[ $* == "-Q -q -e" ]]; then
+  printf 'bash\ngit\nlocalpkg\npacman\n'
   exit
 fi
 

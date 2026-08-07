@@ -5,8 +5,8 @@ strict: set -euo pipefail
 
 # enable_view_markers: always
 # enable_inspect_args: never
-# enable_env_var_names_array: never
-# enable_deps_array: never
+enable_env_var_names_array: never
+enable_deps_array: never
 
 usage_colors:
   caption: bold

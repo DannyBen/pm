@@ -3,7 +3,7 @@ set -euo pipefail
 
 prepare_installer() {
   echo "Initializing installer..."
-  SSI_VERSION="0.1.9"
+  SSI_VERSION="0.1.10"
 
   tmpdir="$(mktemp -d)"
   trap 'rm -rf "$tmpdir"' EXIT
@@ -27,4 +27,5 @@ prepare_installer
 
 ssi log info Uninstalling pm
 ssi uninstall bin pm
+ssi uninstall completion pm
 ssi log debug "Uninstallation complete"

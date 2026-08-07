@@ -26,7 +26,12 @@ Scenario: Remove packages
 
 Scenario: List explicitly installed packages
   When I run 'pm list'
-  Then the output should include 'pacman -Qe'
+  Then the output should include 'localpkg'
+  And the exit code should mean success
+
+Scenario: List available repository packages
+  When I run 'pm list --available'
+  Then the output should include 'remotepkg'
   And the exit code should mean success
 
 Scenario: Find a command provider

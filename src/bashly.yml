@@ -16,11 +16,11 @@ commands:
   help: Install packages
   group: Package Management
   args:
-  - &packages
-    name: package
+  - name: package
     help: Package name
     required: true
     repeatable: true
+    completions: [$(pm list --available)]
   examples:
   - pm install git
   - pm install git fzf
@@ -29,7 +29,12 @@ commands:
   alias: rm
   help: Remove packages and their unneeded dependencies
   group: Package Management
-  args: [*packages]
+  args:
+  - name: package
+    help: Package name
+    required: true
+    repeatable: true
+    completions: [$(pm list)]
   examples:
   - pm remove git
 
@@ -40,8 +45,12 @@ commands:
 
 - name: list
   alias: ls
-  help: List explicitly installed packages
+  help: List package names
   group: Installed Package
+  flags:
+  - long: --available
+    short: -a
+    help: List available repository packages instead of installed packages
 
 - name: info
   help: Show package information
@@ -51,6 +60,8 @@ commands:
     help: Package name
     required: true
     repeatable: true
+    completions:
+    - $(if _pm_completions_option_seen --installed -i; then pm list; else pm list --available; fi)
   flags:
   - long: --installed
     short: -i
@@ -104,5 +115,10 @@ commands:
     help: File path
     required: true
     repeatable: true
+    completions: [<file>]
   examples:
   - pm origin /usr/bin/git
+
+- name: completions
+  help: Generate bash completions.
+  group: Internal

@@ -3,7 +3,7 @@ set -euo pipefail
 
 prepare_installer() {
   echo "Initializing installer..."
-  SSI_VERSION="0.1.9"
+  SSI_VERSION="0.1.10"
 
   tmpdir="$(mktemp -d)"
   trap 'rm -rf "$tmpdir"' EXIT
@@ -27,5 +27,6 @@ prepare_installer
 
 ssi log info Installing pm
 ssi install bin https://github.com/DannyBen/pm/releases/latest/download/pm
+pm completions | ssi install completion - --name pm
 ssi log info "pm --version : $(pm --version)"
 ssi log debug "Installation complete"
