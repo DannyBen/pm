@@ -1,0 +1,3 @@
+export CHANGELOG_COMMIT_URL=https://github.com/DannyBen/pm/commit/%h
+export CHANGELOG_COMPARE_URL=https://github.com/dannyben/pm/compare/%s
+PATH_add .
