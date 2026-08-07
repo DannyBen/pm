@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+printf 'pactree'
+printf ' %s' "$@"
+printf '\n'

@@ -41,7 +41,31 @@ commands:
 - name: update-keys
   alias: keys
   help: Update the Arch Linux keyring
-  group: Package Management
+  group: Package Maintenance
+
+- name: clean
+  help: Remove old packages from the package cache
+  group: Package Maintenance
+  dependencies:
+    paccache: Install with $(magenta pm install pacman-contrib)
+  flags:
+  - long: --keep
+    short: -k
+    arg: count
+    help: Number of package versions to keep (default 3)
+  - long: --dry-run
+    short: -d
+    help: Show packages that would be removed
+  examples:
+  - pm clean
+  - pm clean --keep 2
+  - pm clean --dry-run
+
+- name: outdated
+  help: List installed packages with available updates
+  group: Package Maintenance
+  dependencies:
+    checkupdates: Install with $(magenta pm install pacman-contrib)
 
 - name: list
   alias: ls
@@ -86,18 +110,6 @@ commands:
   - pm search terminal emulator
   - pm search terminal emulator --available
 
-- name: provides
-  help: Find packages that provide a command
-  group: Package Query
-  dependencies:
-    pkgfile: Install with $(magenta pm install pkgfile)
-  args:
-  - name: command
-    help: Command name
-    required: true
-  examples:
-  - pm provides convert
-
 - name: browse
   help: Browse packages interactively
   group: Package Query
@@ -109,9 +121,44 @@ commands:
     short: -a
     help: Browse available repository packages instead of installed packages
 
+- name: provides
+  help: Find packages that provide a command
+  group: Package Analysis
+  dependencies:
+    pkgfile: Install with $(magenta pm install pkgfile)
+  args:
+  - name: command
+    help: Command name
+    required: true
+  examples:
+  - pm provides convert
+
+- name: tree
+  help: Show a package dependency tree
+  group: Package Analysis
+  dependencies:
+    pactree: Install with $(magenta pm install pacman-contrib)
+  args:
+  - name: package
+    help: Package name
+    required: true
+    completions:
+    - $(if _pm_completions_option_seen --available -a; then pm list --available; else pm list; fi)
+  flags:
+  - long: --available
+    short: -a
+    help: Query available repository packages instead of installed packages
+  - long: --reverse
+    short: -r
+    help: Show packages that depend on this package
+  examples:
+  - pm tree git
+  - pm tree git --available
+  - pm tree git --reverse
+
 - name: origin
   help: Show which installed package owns a file
-  group: Package Query
+  group: Package Analysis
   args:
   - name: path
     help: File path

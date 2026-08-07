@@ -24,14 +24,21 @@ pm_usage() {
   printf "  %s   Update package databases and upgrade the system\n" "$(green "update")     "
   printf "  %s   Install packages\n" "$(green "install")    "
   printf "  %s   Remove packages and their unneeded dependencies\n" "$(green "remove")     "
+  echo
+  printf "%s\n" "$(bold "Package Maintenance Commands:")"
   printf "  %s   Update the Arch Linux keyring\n" "$(green "update-keys")"
+  printf "  %s   Remove old packages from the package cache\n" "$(green "clean")      "
+  printf "  %s   List installed packages with available updates\n" "$(green "outdated")   "
   echo
   printf "%s\n" "$(bold "Package Query Commands:")"
   printf "  %s   List package names\n" "$(green "list")       "
   printf "  %s   Show package information\n" "$(green "info")       "
   printf "  %s   Search packages\n" "$(green "search")     "
-  printf "  %s   Find packages that provide a command\n" "$(green "provides")   "
   printf "  %s   Browse packages interactively\n" "$(green "browse")     "
+  echo
+  printf "%s\n" "$(bold "Package Analysis Commands:")"
+  printf "  %s   Find packages that provide a command\n" "$(green "provides")   "
+  printf "  %s   Show a package dependency tree\n" "$(green "tree")       "
   printf "  %s   Show which installed package owns a file\n" "$(green "origin")     "
   echo
   printf "%s\n" "$(bold "Internal Commands:")"
@@ -157,6 +164,58 @@ pm_update_keys_usage() {
   fi
 }
 
+pm_clean_usage() {
+  printf "pm clean - Remove old packages from the package cache\n\n"
+
+  printf "%s\n" "$(bold "Usage:")"
+  printf "  pm clean [OPTIONS]\n"
+  printf "  pm clean --help | -h\n"
+  echo
+
+  if [[ -n "$long_usage" ]]; then
+
+    printf "%s\n" "$(bold "Options:")"
+
+    printf "  %s\n" "$(green "--keep, -k COUNT")"
+    printf "    Number of package versions to keep (default 3)\n"
+    echo
+
+    printf "  %s\n" "$(green "--dry-run, -d")"
+    printf "    Show packages that would be removed\n"
+    echo
+
+    printf "  %s\n" "$(green "--help, -h")"
+    printf "    Show this help\n"
+    echo
+
+    printf "%s\n" "$(bold "Examples:")"
+    printf "  pm clean\n"
+    printf "  pm clean --keep 2\n"
+    printf "  pm clean --dry-run\n"
+    echo
+
+  fi
+}
+
+pm_outdated_usage() {
+  printf "pm outdated - List installed packages with available updates\n\n"
+
+  printf "%s\n" "$(bold "Usage:")"
+  printf "  pm outdated\n"
+  printf "  pm outdated --help | -h\n"
+  echo
+
+  if [[ -n "$long_usage" ]]; then
+
+    printf "%s\n" "$(bold "Options:")"
+
+    printf "  %s\n" "$(green "--help, -h")"
+    printf "    Show this help\n"
+    echo
+
+  fi
+}
+
 pm_list_usage() {
   printf "pm list - List package names\n\n"
   printf "Alias: ls\n"
@@ -250,6 +309,29 @@ pm_search_usage() {
   fi
 }
 
+pm_browse_usage() {
+  printf "pm browse - Browse packages interactively\n\n"
+
+  printf "%s\n" "$(bold "Usage:")"
+  printf "  pm browse [OPTIONS]\n"
+  printf "  pm browse --help | -h\n"
+  echo
+
+  if [[ -n "$long_usage" ]]; then
+
+    printf "%s\n" "$(bold "Options:")"
+
+    printf "  %s\n" "$(green "--available, -a")"
+    printf "    Browse available repository packages instead of installed packages\n"
+    echo
+
+    printf "  %s\n" "$(green "--help, -h")"
+    printf "    Show this help\n"
+    echo
+
+  fi
+}
+
 pm_provides_usage() {
   printf "pm provides - Find packages that provide a command\n\n"
 
@@ -279,12 +361,12 @@ pm_provides_usage() {
   fi
 }
 
-pm_browse_usage() {
-  printf "pm browse - Browse packages interactively\n\n"
+pm_tree_usage() {
+  printf "pm tree - Show a package dependency tree\n\n"
 
   printf "%s\n" "$(bold "Usage:")"
-  printf "  pm browse [OPTIONS]\n"
-  printf "  pm browse --help | -h\n"
+  printf "  pm tree PACKAGE [OPTIONS]\n"
+  printf "  pm tree --help | -h\n"
   echo
 
   if [[ -n "$long_usage" ]]; then
@@ -292,11 +374,27 @@ pm_browse_usage() {
     printf "%s\n" "$(bold "Options:")"
 
     printf "  %s\n" "$(green "--available, -a")"
-    printf "    Browse available repository packages instead of installed packages\n"
+    printf "    Query available repository packages instead of installed packages\n"
+    echo
+
+    printf "  %s\n" "$(green "--reverse, -r")"
+    printf "    Show packages that depend on this package\n"
     echo
 
     printf "  %s\n" "$(green "--help, -h")"
     printf "    Show this help\n"
+    echo
+
+    printf "%s\n" "$(bold "Arguments:")"
+
+    printf "  %s\n" "$(green "PACKAGE")"
+    printf "    Package name\n"
+    echo
+
+    printf "%s\n" "$(bold "Examples:")"
+    printf "  pm tree git\n"
+    printf "  pm tree git --available\n"
+    printf "  pm tree git --reverse\n"
     echo
 
   fi
@@ -442,17 +540,24 @@ send_completions() {
   echo $'    2:--help|2:-h) return 0 ;;'
   echo $'    3:--help|3:-h) return 0 ;;'
   echo $'    4:--help|4:-h) return 0 ;;'
+  echo $'    5:--keep|5:-k) return 2 ;;'
   echo $'    5:--help|5:-h) return 0 ;;'
-  echo $'    5:--available|5:-a) return 0 ;;'
+  echo $'    5:--dry-run|5:-d) return 0 ;;'
   echo $'    6:--help|6:-h) return 0 ;;'
-  echo $'    6:--available|6:-a) return 0 ;;'
   echo $'    7:--help|7:-h) return 0 ;;'
   echo $'    7:--available|7:-a) return 0 ;;'
   echo $'    8:--help|8:-h) return 0 ;;'
+  echo $'    8:--available|8:-a) return 0 ;;'
   echo $'    9:--help|9:-h) return 0 ;;'
   echo $'    9:--available|9:-a) return 0 ;;'
   echo $'    10:--help|10:-h) return 0 ;;'
+  echo $'    10:--available|10:-a) return 0 ;;'
   echo $'    11:--help|11:-h) return 0 ;;'
+  echo $'    12:--help|12:-h) return 0 ;;'
+  echo $'    12:--available|12:-a) return 0 ;;'
+  echo $'    12:--reverse|12:-r) return 0 ;;'
+  echo $'    13:--help|13:-h) return 0 ;;'
+  echo $'    14:--help|14:-h) return 0 ;;'
   echo $'  esac'
   echo $''
   echo $'  return 1'
@@ -509,36 +614,48 @@ send_completions() {
   echo $'        node_id=4'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:list)'
+  echo $'      0:clean)'
   echo $'        node_id=5'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:ls)'
-  echo $'        node_id=5'
-  echo $'        node_word_count=1'
-  echo $'        ;;'
-  echo $'      0:info)'
+  echo $'      0:outdated)'
   echo $'        node_id=6'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:search)'
+  echo $'      0:list)'
   echo $'        node_id=7'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:provides)'
+  echo $'      0:ls)'
+  echo $'        node_id=7'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:info)'
   echo $'        node_id=8'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:browse)'
+  echo $'      0:search)'
   echo $'        node_id=9'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:origin)'
+  echo $'      0:browse)'
   echo $'        node_id=10'
   echo $'        node_word_count=1'
   echo $'        ;;'
-  echo $'      0:completions)'
+  echo $'      0:provides)'
   echo $'        node_id=11'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:tree)'
+  echo $'        node_id=12'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:origin)'
+  echo $'        node_id=13'
+  echo $'        node_word_count=1'
+  echo $'        ;;'
+  echo $'      0:completions)'
+  echo $'        node_id=14'
   echo $'        node_word_count=1'
   echo $'        ;;'
   echo $'      *)'
@@ -601,12 +718,15 @@ send_completions() {
   echo $'  (( invalid_completion )) && return'
   echo $''
   echo $'  case "$node_id:$prev" in'
+  echo $'    5:--keep|5:-k)'
+  echo $'      return'
+  echo $'      ;;'
   echo $'  esac'
   echo $''
   echo $'  if [[ "${cur:0:1}" != "-" ]] && (( positional_index == 0 )); then'
   echo $'    case "$node_id" in'
   echo $'      0)'
-  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add remove rm update-keys keys list ls info search provides browse origin completions" -- "$cur")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "update u install add remove rm update-keys keys clean outdated list ls info search browse provides tree origin completions" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
   echo $'    esac'
@@ -648,14 +768,14 @@ send_completions() {
   echo $'      5)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
-  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
+  echo $'        _pm_completions_option_seen "--keep" "-k" || words+=("--keep" "-k")'
+  echo $'        _pm_completions_option_seen "--dry-run" "-d" || words+=("--dry-run" "-d")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
   echo $'      6)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
-  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
@@ -669,6 +789,7 @@ send_completions() {
   echo $'      8)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
@@ -682,10 +803,31 @@ send_completions() {
   echo $'      10)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
   echo $'      11)'
+  echo $'        local words=()'
+  echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
+  echo $'        return'
+  echo $'        ;;'
+  echo $'      12)'
+  echo $'        local words=()'
+  echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
+  echo $'        _pm_completions_option_seen "--reverse" "-r" || words+=("--reverse" "-r")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
+  echo $'        return'
+  echo $'        ;;'
+  echo $'      13)'
+  echo $'        local words=()'
+  echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
+  echo $'        return'
+  echo $'        ;;'
+  echo $'      14)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
@@ -704,22 +846,26 @@ send_completions() {
   echo $'    return'
   echo $'  fi'
   echo $''
-  echo $'  if [[ "$node_id" == "6" ]] && (( positional_index >= 0 )); then'
+  echo $'  if [[ "$node_id" == "8" ]] && (( positional_index >= 0 )); then'
   echo $'    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(if _pm_completions_option_seen --available -a; then pm list --available; else pm list; fi)" -- "$cur")'
   echo $'    return'
   echo $'  fi'
   echo $''
-  echo $'  if [[ "$node_id" == "7" ]] && (( positional_index >= 0 )); then'
+  echo $'  if [[ "$node_id" == "9" ]] && (( positional_index >= 0 )); then'
   echo $'    return'
   echo $'  fi'
   echo $''
-  echo $'  if [[ "$node_id" == "10" ]] && (( positional_index >= 0 )); then'
+  echo $'  if [[ "$node_id" == "13" ]] && (( positional_index >= 0 )); then'
   echo $'    while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -A file -- "$cur")'
   echo $'    return'
   echo $'  fi'
   echo $''
   echo $'  case "$node_id:$positional_index" in'
-  echo $'    8:0)'
+  echo $'    11:0)'
+  echo $'      return'
+  echo $'      ;;'
+  echo $'    12:0)'
+  echo $'      while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "$(if _pm_completions_option_seen --available -a; then pm list --available; else pm list; fi)" -- "$cur")'
   echo $'      return'
   echo $'      ;;'
   echo $'  esac'
@@ -756,6 +902,39 @@ pm_remove_command() {
 pm_update_keys_command() {
 
   sudo pacman -Sy --noconfirm archlinux-keyring
+
+}
+
+pm_clean_command() {
+
+  options=(-r)
+
+  if [[ ${args["--dry-run"]:-} ]]; then
+    options=(-d)
+  fi
+
+  if [[ -n ${args[--keep]:-} ]]; then
+    options+=(--keep "${args[--keep]}")
+  fi
+
+  if [[ ${args["--dry-run"]:-} ]]; then
+    paccache "${options[@]}"
+  else
+    sudo paccache "${options[@]}"
+  fi
+
+}
+
+pm_outdated_command() {
+
+  status=0
+  checkupdates || status=$?
+
+  if ((status == 2)); then
+    exit 0
+  fi
+
+  exit "$status"
 
 }
 
@@ -799,12 +978,6 @@ pm_search_command() {
 
 }
 
-pm_provides_command() {
-
-  pkgfile -b "${args[command]}"
-
-}
-
 pm_browse_command() {
 
   if [[ ${args[--available]:-} ]]; then
@@ -818,6 +991,28 @@ pm_browse_command() {
       --layout=reverse \
       --bind 'enter:execute(pacman -Qil {} | less)'
   fi
+
+}
+
+pm_provides_command() {
+
+  pkgfile -b "${args[command]}"
+
+}
+
+pm_tree_command() {
+
+  options=()
+
+  if [[ ${args[--available]:-} ]]; then
+    options+=(--sync)
+  fi
+
+  if [[ ${args[--reverse]:-} ]]; then
+    options+=(--reverse)
+  fi
+
+  pactree "${options[@]}" "${args[package]}"
 
 }
 
@@ -905,6 +1100,20 @@ parse_requirements() {
       shift $#
       ;;
 
+    clean)
+      action="clean"
+      shift
+      pm_clean_parse_requirements "$@"
+      shift $#
+      ;;
+
+    outdated)
+      action="outdated"
+      shift
+      pm_outdated_parse_requirements "$@"
+      shift $#
+      ;;
+
     list | ls)
       action="list"
       shift
@@ -926,6 +1135,13 @@ parse_requirements() {
       shift $#
       ;;
 
+    browse)
+      action="browse"
+      shift
+      pm_browse_parse_requirements "$@"
+      shift $#
+      ;;
+
     provides)
       action="provides"
       shift
@@ -933,10 +1149,10 @@ parse_requirements() {
       shift $#
       ;;
 
-    browse)
-      action="browse"
+    tree)
+      action="tree"
       shift
-      pm_browse_parse_requirements "$@"
+      pm_tree_parse_requirements "$@"
       shift $#
       ;;
 
@@ -1186,6 +1402,132 @@ pm_update_keys_parse_requirements() {
 
 }
 
+pm_clean_parse_requirements() {
+  local key
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        pm_clean_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  missing_deps=
+
+  if ! command -v paccache >/dev/null 2>&1; then
+    printf "missing dependency: paccache\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install pacman-contrib)" >&2
+    missing_deps=1
+  fi
+
+  if [[ -n $missing_deps ]]; then
+    exit 1
+  fi
+
+  action="clean"
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      --keep | -k)
+
+        if [[ -n ${2+x} ]]; then
+          args['--keep']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--keep requires an argument: --keep, -k COUNT" >&2
+          exit 1
+        fi
+        ;;
+
+      --dry-run | -d)
+
+        args['--dry-run']=1
+        shift
+        ;;
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
+pm_outdated_parse_requirements() {
+  local key
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        pm_outdated_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  missing_deps=
+
+  if ! command -v checkupdates >/dev/null 2>&1; then
+    printf "missing dependency: checkupdates\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install pacman-contrib)" >&2
+    missing_deps=1
+  fi
+
+  if [[ -n $missing_deps ]]; then
+    exit 1
+  fi
+
+  action="outdated"
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
 pm_list_parse_requirements() {
   local key
 
@@ -1362,6 +1704,72 @@ pm_search_parse_requirements() {
 
 }
 
+pm_browse_parse_requirements() {
+  local key
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+      --help | -h)
+        long_usage=yes
+        pm_browse_usage
+        exit
+        ;;
+
+      *)
+        break
+        ;;
+
+    esac
+  done
+
+  missing_deps=
+
+  if ! command -v fzf >/dev/null 2>&1; then
+    printf "missing dependency: fzf\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install fzf)" >&2
+    missing_deps=1
+  fi
+
+  if ! command -v less >/dev/null 2>&1; then
+    printf "missing dependency: less\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install less)" >&2
+    missing_deps=1
+  fi
+
+  if [[ -n $missing_deps ]]; then
+    exit 1
+  fi
+
+  action="browse"
+
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+
+      --available | -a)
+
+        args['--available']=1
+        shift
+        ;;
+
+      -?*)
+        printf "invalid option: %s\n" "$key" >&2
+        exit 1
+        ;;
+
+      *)
+
+        printf "invalid argument: %s\n" "$key" >&2
+        exit 1
+
+        ;;
+
+    esac
+  done
+
+}
+
 pm_provides_parse_requirements() {
   local key
 
@@ -1430,7 +1838,7 @@ pm_provides_parse_requirements() {
 
 }
 
-pm_browse_parse_requirements() {
+pm_tree_parse_requirements() {
   local key
 
   while [[ $# -gt 0 ]]; do
@@ -1438,7 +1846,7 @@ pm_browse_parse_requirements() {
     case "$key" in
       --help | -h)
         long_usage=yes
-        pm_browse_usage
+        pm_tree_usage
         exit
         ;;
 
@@ -1451,15 +1859,9 @@ pm_browse_parse_requirements() {
 
   missing_deps=
 
-  if ! command -v fzf >/dev/null 2>&1; then
-    printf "missing dependency: fzf\n" >&2
-    printf "%s\n\n" "Install with $(magenta pm install fzf)" >&2
-    missing_deps=1
-  fi
-
-  if ! command -v less >/dev/null 2>&1; then
-    printf "missing dependency: less\n" >&2
-    printf "%s\n\n" "Install with $(magenta pm install less)" >&2
+  if ! command -v pactree >/dev/null 2>&1; then
+    printf "missing dependency: pactree\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install pacman-contrib)" >&2
     missing_deps=1
   fi
 
@@ -1467,7 +1869,7 @@ pm_browse_parse_requirements() {
     exit 1
   fi
 
-  action="browse"
+  action="tree"
 
   while [[ $# -gt 0 ]]; do
     key="$1"
@@ -1479,6 +1881,12 @@ pm_browse_parse_requirements() {
         shift
         ;;
 
+      --reverse | -r)
+
+        args['--reverse']=1
+        shift
+        ;;
+
       -?*)
         printf "invalid option: %s\n" "$key" >&2
         exit 1
@@ -1486,13 +1894,29 @@ pm_browse_parse_requirements() {
 
       *)
 
-        printf "invalid argument: %s\n" "$key" >&2
-        exit 1
+        if [[ -z ${args['package']+x} ]]; then
+          args['package']=$1
+          shift
+        else
+          printf "invalid argument: %s\n" "$key" >&2
+          exit 1
+        fi
 
         ;;
 
     esac
   done
+
+  if [[ -z ${args['package']+x} ]]; then
+    printf "missing required argument: PACKAGE\nusage: pm tree PACKAGE [OPTIONS]\n" >&2
+
+    printf "examples:\n" >&2
+    printf "  pm tree git\n" >&2
+    printf "  pm tree git --available\n" >&2
+    printf "  pm tree git --reverse\n" >&2
+
+    exit 1
+  fi
 
 }
 
@@ -1615,11 +2039,14 @@ run() {
     "install") pm_install_command ;;
     "remove") pm_remove_command ;;
     "update-keys") pm_update_keys_command ;;
+    "clean") pm_clean_command ;;
+    "outdated") pm_outdated_command ;;
     "list") pm_list_command ;;
     "info") pm_info_command ;;
     "search") pm_search_command ;;
-    "provides") pm_provides_command ;;
     "browse") pm_browse_command ;;
+    "provides") pm_provides_command ;;
+    "tree") pm_tree_command ;;
     "origin") pm_origin_command ;;
     "completions") pm_completions_command ;;
   esac

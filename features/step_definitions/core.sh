@@ -4,10 +4,14 @@
 @After
   PATH="$scenario_path"
   export PATH
+  unset PM_TEST_NO_UPDATES
 
 @Given package commands are mocked
   PATH="$PWD/features/fixtures/bin:$PATH"
   export PATH
+
+@Given no package updates are available
+  export PM_TEST_NO_UPDATES=1
 
 @When I run '{command}'
   PATH="$(pwd):$PATH" run "$command"
