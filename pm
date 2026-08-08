@@ -2391,7 +2391,7 @@ pm_completions_parse_requirements() {
 }
 
 initialize() {
-  declare -g version="0.1.0"
+  declare -g version="0.1.1"
   set -euo pipefail
 
 }
