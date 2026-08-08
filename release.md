@@ -32,6 +32,12 @@ test "$(./pm --version)" = "{{ version }}"
 git rev-parse --quiet --verify "refs/tags/v{{ version }}" >/dev/null
 ```
 
+## Changelog contains the release
+
+```bash :check
+grep -Fq "v{{ version }} -" CHANGELOG.md
+```
+
 ## GitHub tag exists
 
 ```bash :check

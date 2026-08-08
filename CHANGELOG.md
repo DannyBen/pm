@@ -1,6 +1,14 @@
 Changelog
 ========================================
 
+v0.1.1 - 2026-08-08
+----------------------------------------
+
+- Rename `remove` to `uninstall` (with `remove` as alias) [`882b9ce`](https://github.com/DannyBen/pm/commit/882b9ce)
+- Allow `pm history` to be called without args [`4f19a9e`](https://github.com/DannyBen/pm/commit/4f19a9e)
+- Compare [`v0.1.0..v0.1.1`](https://github.com/dannyben/pm/compare/v0.1.0..v0.1.1)
+
+
 v0.1.0 - 2026-08-07
 ----------------------------------------
 
