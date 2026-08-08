@@ -75,6 +75,7 @@ pm outdated
 pm tree git
 pm tree git --reverse
 pm origin /usr/bin/git
+pm history
 pm history git
 
 # Inspect repositories and foreign packages
@@ -133,7 +134,7 @@ dependencies and show installation instructions when needed:
 | Commands                    | Package          |
 |:----------------------------|:-----------------|
 | `clean`, `outdated`, `tree` | `pacman-contrib` |
-| `browse`                    | `fzf`, `less`    |
+| `browse`                    | `fzf`            |
 | `provides`                  | `pkgfile`        |
 | `history`                   | `ripgrep`        |
 

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+printf 'cat'
+printf ' %s' "$@"
+printf '\n'

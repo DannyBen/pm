@@ -117,7 +117,6 @@ commands:
   group: Package Query
   dependencies:
     fzf: Install with $(magenta pm install fzf)
-    less: Install with $(magenta pm install less)
   flags:
   - long: --available
     short: -a
@@ -180,15 +179,14 @@ commands:
   args:
   - name: package
     help: Package name
-    required: true
     completions: [$(pm list)]
   flags:
   - long: --context
     short: -c
     arg: lines
-    default: "10"
-    help: Number of lines to show around each match
+    help: Number of lines to show around each match (default 10)
   examples:
+  - pm history
   - pm history mdcat
   - pm history mdcat --context 5
 

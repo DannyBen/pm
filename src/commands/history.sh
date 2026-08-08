@@ -1,9 +1,16 @@
 log_file=$(pacman-conf LogFile)
 
-rg \
-  -n \
-  --context "${args[--context]}" \
-  --fixed-strings \
-  -- \
-  "${args[package]}" \
-  "$log_file"
+if [[ ${args[package]:-} ]]; then
+  rg \
+    -n \
+    --context "${args[--context]:-10}" \
+    --fixed-strings \
+    -- \
+    "${args[package]}" \
+    "$log_file"
+elif [[ ${args[--context]:-} ]]; then
+  printf '%s\n' "--context requires a package" >&2
+  exit 1
+else
+  cat "$log_file"
+fi

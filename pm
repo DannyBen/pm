@@ -442,7 +442,7 @@ pm_history_usage() {
   echo
 
   printf "%s\n" "$(bold "Usage:")"
-  printf "  pm history PACKAGE [OPTIONS]\n"
+  printf "  pm history [PACKAGE] [OPTIONS]\n"
   printf "  pm history --help | -h\n"
   echo
 
@@ -451,8 +451,7 @@ pm_history_usage() {
     printf "%s\n" "$(bold "Options:")"
 
     printf "  %s\n" "$(green "--context, -c LINES")"
-    printf "    Number of lines to show around each match\n"
-    printf "    %s\n" "Default: 10"
+    printf "    Number of lines to show around each match (default 10)\n"
     echo
 
     printf "  %s\n" "$(green "--help, -h")"
@@ -466,6 +465,7 @@ pm_history_usage() {
     echo
 
     printf "%s\n" "$(bold "Examples:")"
+    printf "  pm history\n"
     printf "  pm history mdcat\n"
     printf "  pm history mdcat --context 5\n"
     echo
@@ -606,6 +606,10 @@ magenta_underlined() { print_in_color "\e[4;35m" "$*"; }
 cyan_underlined() { print_in_color "\e[4;36m" "$*"; }
 black_underlined() { print_in_color "\e[4;30m" "$*"; }
 white_underlined() { print_in_color "\e[4;37m" "$*"; }
+
+pm_set_pager() {
+  export PAGER="${PAGER:-more}"
+}
 
 send_completions() {
   echo $'# pm completion                                            -*- shell-script -*-'
@@ -1124,16 +1128,18 @@ pm_search_command() {
 
 pm_browse_command() {
 
+  pm_set_pager
+
   if [[ ${args[--available]:-} ]]; then
     pacman -S -l -q | fzf \
       --preview 'pacman -Si {}' \
       --layout=reverse \
-      --bind 'enter:execute(pacman -Si {} | less)'
+      --bind "enter:execute(pacman -Si {} | $PAGER)"
   else
     pacman -Qq | fzf \
       --preview 'pacman -Qil {}' \
       --layout=reverse \
-      --bind 'enter:execute(pacman -Qil {} | less)'
+      --bind "enter:execute(pacman -Qil {} | $PAGER)"
   fi
 
 }
@@ -1173,13 +1179,20 @@ pm_history_command() {
 
   log_file=$(pacman-conf LogFile)
 
-  rg \
-    -n \
-    --context "${args[--context]}" \
-    --fixed-strings \
-    -- \
-    "${args[package]}" \
-    "$log_file"
+  if [[ ${args[package]:-} ]]; then
+    rg \
+      -n \
+      --context "${args[--context]:-10}" \
+      --fixed-strings \
+      -- \
+      "${args[package]}" \
+      "$log_file"
+  elif [[ ${args[--context]:-} ]]; then
+    printf '%s\n' "--context requires a package" >&2
+    exit 1
+  else
+    cat "$log_file"
+  fi
 
 }
 
@@ -1922,12 +1935,6 @@ pm_browse_parse_requirements() {
     missing_deps=1
   fi
 
-  if ! command -v less >/dev/null 2>&1; then
-    printf "missing dependency: less\n" >&2
-    printf "%s\n\n" "Install with $(magenta pm install less)" >&2
-    missing_deps=1
-  fi
-
   if [[ -n $missing_deps ]]; then
     exit 1
   fi
@@ -2242,18 +2249,6 @@ pm_history_parse_requirements() {
 
     esac
   done
-
-  if [[ -z ${args['package']+x} ]]; then
-    printf "missing required argument: PACKAGE\nusage: pm history PACKAGE [OPTIONS]\n" >&2
-
-    printf "examples:\n" >&2
-    printf "  pm history mdcat\n" >&2
-    printf "  pm history mdcat --context 5\n" >&2
-
-    exit 1
-  fi
-
-  [[ -n ${args['--context']:-} ]] || args['--context']="10"
 
 }
 
