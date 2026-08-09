@@ -1,6 +1,13 @@
 Changelog
 ========================================
 
+v0.1.2 - 2026-08-09
+----------------------------------------
+
+- Add fakeroot dependency for outdated command [`052e940`](https://github.com/DannyBen/pm/commit/052e940)
+- Compare [`v0.1.1..v0.1.2`](https://github.com/dannyben/pm/compare/v0.1.1..v0.1.2)
+
+
 v0.1.1 - 2026-08-08
 ----------------------------------------
 
