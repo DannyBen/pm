@@ -1,6 +1,6 @@
 name: pm
 help: A friendly interface for pacman
-version: 0.1.1
+version: 0.1.2
 
 dependencies:
   pacman: pm requires pacman and is intended for Arch Linux
