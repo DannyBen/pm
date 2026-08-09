@@ -1705,6 +1705,12 @@ pm_outdated_parse_requirements() {
     missing_deps=1
   fi
 
+  if ! command -v fakeroot >/dev/null 2>&1; then
+    printf "missing dependency: fakeroot\n" >&2
+    printf "%s\n\n" "Install with $(magenta pm install fakeroot)" >&2
+    missing_deps=1
+  fi
+
   if [[ -n $missing_deps ]]; then
     exit 1
   fi

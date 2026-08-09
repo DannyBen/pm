@@ -66,6 +66,7 @@ commands:
   group: Package Maintenance
   dependencies:
     checkupdates: Install with $(magenta pm install pacman-contrib)
+    fakeroot: Install with $(magenta pm install fakeroot)
 
 - name: list
   alias: ls

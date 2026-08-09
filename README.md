@@ -131,12 +131,13 @@ Run `pm COMMAND --help` for command-specific options and examples.
 Most pm commands only require pacman. Additional commands declare their own
 dependencies and show installation instructions when needed:
 
-| Commands                    | Package          |
-|:----------------------------|:-----------------|
-| `clean`, `outdated`, `tree` | `pacman-contrib` |
-| `browse`                    | `fzf`            |
-| `provides`                  | `pkgfile`        |
-| `history`                   | `ripgrep`        |
+| Commands          | Package                     |
+|:------------------|:----------------------------|
+| `clean`, `tree`   | `pacman-contrib`            |
+| `outdated`        | `pacman-contrib`, `fakeroot` |
+| `browse`          | `fzf`                       |
+| `provides`        | `pkgfile`                   |
+| `history`         | `ripgrep`                   |
 
 ## Uninstall
 
