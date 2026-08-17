@@ -84,11 +84,6 @@ pm_update_usage() {
     printf "    Show this help\n"
     echo
 
-    printf "%s\n" "$(bold "Examples:")"
-    printf "  pm update\n"
-    printf "  pm update --yes\n"
-    echo
-
   fi
 }
 
