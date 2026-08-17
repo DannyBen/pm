@@ -10,6 +10,10 @@ commands:
   alias: u
   help: Update package databases and upgrade the system
   group: Package Management
+  flags:
+  - long: --yes
+    short: -y
+    help: Skip the confirmation prompt
 
 - name: install
   alias: [add, i]

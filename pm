@@ -68,7 +68,7 @@ pm_update_usage() {
   echo
 
   printf "%s\n" "$(bold "Usage:")"
-  printf "  pm update\n"
+  printf "  pm update [OPTIONS]\n"
   printf "  pm update --help | -h\n"
   echo
 
@@ -76,8 +76,17 @@ pm_update_usage() {
 
     printf "%s\n" "$(bold "Options:")"
 
+    printf "  %s\n" "$(green "--yes, -y")"
+    printf "    Skip the confirmation prompt\n"
+    echo
+
     printf "  %s\n" "$(green "--help, -h")"
     printf "    Show this help\n"
+    echo
+
+    printf "%s\n" "$(bold "Examples:")"
+    printf "  pm update\n"
+    printf "  pm update --yes\n"
     echo
 
   fi
@@ -623,6 +632,7 @@ send_completions() {
   echo $'    0:--help|0:-h) return 0 ;;'
   echo $'    0:--version|0:-v) return 0 ;;'
   echo $'    1:--help|1:-h) return 0 ;;'
+  echo $'    1:--yes|1:-y) return 0 ;;'
   echo $'    2:--help|2:-h) return 0 ;;'
   echo $'    3:--help|3:-h) return 0 ;;'
   echo $'    4:--help|4:-h) return 0 ;;'
@@ -869,6 +879,7 @@ send_completions() {
   echo $'      1)'
   echo $'        local words=()'
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
+  echo $'        _pm_completions_option_seen "--yes" "-y" || words+=("--yes" "-y")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
@@ -1025,7 +1036,13 @@ send_completions() {
 
 pm_update_command() {
 
-  sudo pacman -Syu
+  options=(-Syu)
+
+  if [[ ${args[--yes]:-} ]]; then
+    options+=(--noconfirm)
+  fi
+
+  sudo pacman "${options[@]}"
 
 }
 
@@ -1431,6 +1448,12 @@ pm_update_parse_requirements() {
   while [[ $# -gt 0 ]]; do
     key="$1"
     case "$key" in
+
+      --yes | -y)
+
+        args['--yes']=1
+        shift
+        ;;
 
       -?*)
         printf "invalid option: %s\n" "$key" >&2

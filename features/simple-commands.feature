@@ -9,6 +9,16 @@ Scenario: Update the system
   Then the output should include 'sudo pacman -Syu'
   And the exit code should mean success
 
+Scenario Outline: Update the system without confirmation using <flag>
+  When I run 'pm update <flag>'
+  Then the output should include 'sudo pacman -Syu --noconfirm'
+  And the exit code should mean success
+
+Examples:
+  | flag  |
+  | --yes |
+  | -y    |
+
 Scenario: Update the keyring
   When I run 'pm update-keys'
   Then the output should include 'sudo pacman -Sy --noconfirm archlinux-keyring'
