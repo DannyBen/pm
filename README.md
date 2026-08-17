@@ -73,6 +73,7 @@ pm outdated
 
 # Inspect package relationships and history
 pm tree git
+pm tree git --depth 1
 pm tree git --reverse
 pm origin /usr/bin/git
 pm history

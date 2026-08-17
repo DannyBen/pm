@@ -392,6 +392,10 @@ pm_tree_usage() {
     printf "    Show packages that depend on this package\n"
     echo
 
+    printf "  %s\n" "$(green "--depth, -d DEPTH")"
+    printf "    Limit the depth of recursion\n"
+    echo
+
     printf "  %s\n" "$(green "--help, -h")"
     printf "    Show this help\n"
     echo
@@ -404,6 +408,7 @@ pm_tree_usage() {
 
     printf "%s\n" "$(bold "Examples:")"
     printf "  pm tree git\n"
+    printf "  pm tree git --depth 1\n"
     printf "  pm tree git --available\n"
     printf "  pm tree git --reverse\n"
     echo
@@ -644,6 +649,7 @@ send_completions() {
   echo $'    10:--help|10:-h) return 0 ;;'
   echo $'    10:--available|10:-a) return 0 ;;'
   echo $'    11:--help|11:-h) return 0 ;;'
+  echo $'    12:--depth|12:-d) return 2 ;;'
   echo $'    12:--help|12:-h) return 0 ;;'
   echo $'    12:--available|12:-a) return 0 ;;'
   echo $'    12:--reverse|12:-r) return 0 ;;'
@@ -848,6 +854,9 @@ send_completions() {
   echo $'    5:--keep|5:-k)'
   echo $'      return'
   echo $'      ;;'
+  echo $'    12:--depth|12:-d)'
+  echo $'      return'
+  echo $'      ;;'
   echo $'    14:--context|14:-c)'
   echo $'      return'
   echo $'      ;;'
@@ -949,6 +958,7 @@ send_completions() {
   echo $'        _pm_completions_option_seen "--help" "-h" || words+=("--help" "-h")'
   echo $'        _pm_completions_option_seen "--available" "-a" || words+=("--available" "-a")'
   echo $'        _pm_completions_option_seen "--reverse" "-r" || words+=("--reverse" "-r")'
+  echo $'        _pm_completions_option_seen "--depth" "-d" || words+=("--depth" "-d")'
   echo $'        while read -r; do COMPREPLY+=("$REPLY"); done < <(compgen -W "${words[*]}" -- "$cur")'
   echo $'        return'
   echo $'        ;;'
@@ -1172,6 +1182,10 @@ pm_tree_command() {
 
   if [[ ${args[--reverse]:-} ]]; then
     options+=(--reverse)
+  fi
+
+  if [[ ${args[--depth]:-} ]]; then
+    options+=(--depth "${args[--depth]}")
   fi
 
   pactree "${options[@]}" "${args[package]}"
@@ -2109,6 +2123,18 @@ pm_tree_parse_requirements() {
         shift
         ;;
 
+      --depth | -d)
+
+        if [[ -n ${2+x} ]]; then
+          args['--depth']="$2"
+          shift
+          shift
+        else
+          printf "%s\n" "--depth requires an argument: --depth, -d DEPTH" >&2
+          exit 1
+        fi
+        ;;
+
       -?*)
         printf "invalid option: %s\n" "$key" >&2
         exit 1
@@ -2134,6 +2160,7 @@ pm_tree_parse_requirements() {
 
     printf "examples:\n" >&2
     printf "  pm tree git\n" >&2
+    printf "  pm tree git --depth 1\n" >&2
     printf "  pm tree git --available\n" >&2
     printf "  pm tree git --reverse\n" >&2
 

@@ -157,8 +157,13 @@ commands:
   - long: --reverse
     short: -r
     help: Show packages that depend on this package
+  - long: --depth
+    short: -d
+    arg: depth
+    help: Limit the depth of recursion
   examples:
   - pm tree git
+  - pm tree git --depth 1
   - pm tree git --available
   - pm tree git --reverse
 

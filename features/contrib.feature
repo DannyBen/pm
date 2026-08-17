@@ -29,6 +29,11 @@ Scenario: Show a reverse dependency tree
   Then the output should include 'pactree --reverse bash'
   And the exit code should mean success
 
+Scenario: Limit the depth of a package dependency tree
+  When I run 'pm tree bash -d 1'
+  Then the output should include 'pactree --depth 1 bash'
+  And the exit code should mean success
+
 Scenario: Clean the package cache conservatively
   When I run 'pm clean'
   Then the output should include 'sudo paccache -r'
